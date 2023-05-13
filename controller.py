@@ -1,5 +1,6 @@
 from PyQt5.QtWidgets import *
 from view import *
+import csv
 
 
 class Controller(QMainWindow, Ui_MainWindow):
@@ -71,11 +72,7 @@ class Controller(QMainWindow, Ui_MainWindow):
         self.label_water_amount.setText('0')
         self.label_output.setText('Please Enter Your Order')
 
-    def calculate(self) -> None:
-        '''
-        Method which takes all values stored for items in the GUI and
-        calculates the price of the items when put together
-        '''
+    def calculate(self):
         cookie = int(self.label_cookie_amount.text())
         cookie_total = cookie * 1.5
         sandwich = int(self.label_sandwich_amount.text())
@@ -83,10 +80,19 @@ class Controller(QMainWindow, Ui_MainWindow):
         water = int(self.label_water_amount.text())
         water_total = water * 1
         total = cookie_total + sandwich_total + water_total
-        self.label_output.setText(f'-------------------------\n'
-                                  f'({cookie}) - Cookie(s) = ${cookie_total:.2f}\n'
-                                  f'({sandwich}) - Sandwich(es) = ${sandwich_total:.2f}\n'
-                                  f'({water}) - Water(s) = ${water_total:.2f}\n'
-                                  f'-------------------------\n'
-                                  f'GRAND TOTAL = ${total:.2f}\n'
-                                  f'-------------------------')
+        tax = total * .10
+        receipt = [
+            ["Ryan's Concession Stand"],
+            ['402-648-7532'],
+            ['', 'Amount', 'Subtotal'],
+            ['Cookie(s)', cookie, f'${cookie_total:.2f}'],
+            ['Sandwich(es)', sandwich, f'${sandwich_total:.2f}'],
+            ['Water(s)', water, f'${water_total:.2f}'],
+            ['Tax', '', f'${tax:.2f}'],
+            [],
+            ['TOTAL', '', f'${(total+tax):.2f}']
+                    ]
+        with open('receipt.csv', 'w', newline='') as f:
+            receiptwriter = csv.writer(f)
+            receiptwriter.writerows(receipt)
+
